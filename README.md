@@ -1,6 +1,6 @@
 # Rummy Vision Pro - Neural Network Object Detection
 
-Rummy Vision Pro is an Android application built to explore Neural Network design and usage.
+Rummy Vision Pro is an Android application built to explore Neural Network design and usage. The use case was to create a scoring app for the playing card game Rummy. An Android application was written to use the network to detect and score melds.
 
 [Rummy Vision Pro](https://play.google.com/store/apps/details?id=com.coresoftwaredesign.rummyvisionpro) is available for Android devices on Google Play.
 
@@ -8,9 +8,9 @@ Rummy Vision Pro is an Android application built to explore Neural Network desig
 
 A neural network was trained on playing card images.
 
-The initial proof of concept was designed around a Yolo4-tiny convolutional neural network trained and implemented via the [Darknet Framework](https://github.com/pjreddie/darknet). An android app POC was build using the model. However, there were integration and version issues getting OpenCV, NVidia CUDA and the Android hardware.
+The initial proof of concept was designed around a Yolo4-tiny convolutional neural network trained and implemented via the [Darknet Framework](https://github.com/pjreddie/darknet). Windows and Android proof-of-concept apps were built using the model. However, there were multiple issues integrating OpenCV, NVidia CUDA and the Android hardware.
 
-Alternately, a EfficientDet-Lite2 model from the [TensorFlow-Lite Framework](https://www.tensorflow.org/lite/android) was selected. An Android application was written to use the model to detect and score melds of cards for the playing card game Rummy. The EfficientDet-Lite2 model was selected as it provided a reasonable frame rate while still minimizing the size for mobile.
+Next, a EfficientDet-Lite2 model from the [TensorFlow-Lite Framework](https://www.tensorflow.org/lite/android) was evaluated. The EfficientDet-Lite2 model was selected as it provided a reasonable frame rate while still minimizing the size for mobile.
 
 
 | Model architecture | Size(MB)* | Latency(ms)** | Average Precision*** |
@@ -50,13 +50,13 @@ Manually photographing and tagging thousands of training images is very labor in
 
 ### Bounding Box Detection
 
-The the bounding box metadata was extracted using Python and OpenCV scripts to find the best-fitting bounding box for each pip. Photoshop was used for spot checking when necessary.
+The bounding box data was automatically extracted via Python and OpenCV scripts written to find the best-fitting bounding box for each pip. Photoshop was used for manual spot checking when necessary.
 
 ![Cards with Bounding Boxes](docs/images/cards_w_bounding_box_old.jpg "Cards with Bounding Boxes")
 
 ### Training Scene Generation
 
-The goal is to create images with the same visual characteristics as a mobile phone video camera. Metadata indicating which classes were selected and the bounding boxes of the corner 'pips'for the image is also created.
+The goal is to create images with the same visual characteristics as a mobile phone video camera. Metadata indicating which classes are selected and the bounding boxes of the corner 'pips' for the image is also created.
 
 The scripts are written in Python and use [OpenCV](https://opencv.org/) (cv2), [imgaug](https://imgaug.readthedocs.io/), and [Pillow](https://pypi.org/project/Pillow/) (PIL) libraries.
 
@@ -66,12 +66,12 @@ Backgrounds were obtained from [Describable Textures Dataset (DTD)](https://www.
 
 ### Image Augmentation
 
-- A random background is choosen.
+- A random background is chosen.
 - One to thirteen random cards (classes) are selected.
-- The second, inverted pip of the top card is masked to prevent it from impacting the training the network.
+- The second, inverted pip of the top card is masked to prevent it from impacting the training.
 - Card positions, spacing, rotations are randomized. Bounding boxes are adjusted accordingly.
 - Drop shadows are generated at card edges in order to increase realism.
-- Gaussian Blur, brightness, and contrast are randomized. Random noise is injected. This is critical to prevent overtraining.
+- Gaussian blur, brightness, and contrast are randomized. Random noise is injected. This is critical to prevent overtraining.
 - A random amount of motion blur is applied to 25% of the images.
 
 ![Colab - Create Training Images Session](docs/images/colab-create.png)
@@ -88,20 +88,20 @@ The model was trained on Google CoLab using the TensorFlow Lite Model Maker work
 - Loading pre-trained EfficientDet-Lite2 model trained on the COCO dataset.
 - Start TensorFlow Lite Model Maker training process.
 - Terminate process when error/loss level is acceptable.
-- Training took 42 epochs at approximately 500 sec per epoch (~6 hrs).
+- Training took 42 epochs at approximately 500 sec per epoch (~6 hrs.).
 - Validate model against test images.
 
 ![Colab - TensorFlow Training Session](docs/images/colab-training.png)
 
 ## Android Application
 
-An application was created to use the Neural Network to detect playing cards. The scoring logic for the [Standard Rules of Rummy](https://bicyclecards.com/how-to-play/rummy-rum) is implemented. The app can save scan metadata and images for listing, editing, and modification.
+An application was created to use the trained neural network to detect playing cards. The scoring logic for the standard rules of [Rummy](https://bicyclecards.com/how-to-play/rummy-rum) is implemented. The app can save scan metadata and images for listing, editing, and modification.
 
 ### App Design
 
-The application design is simple list and detail pattern. The [TensorFlow-Lite Framework](https://www.tensorflow.org/lite/android) was selected as it integrated the with the Android platform and was well supported.
+The application design follows a simple list / detail CRUD pattern. The [TensorFlow-Lite Framework](https://www.tensorflow.org/lite/android) was selected as it integrated with the Android platform and was well supported.
 
-The the code is designed using Model-View-ViewModel (MVVM) architecture and leverages LiveData for one-directional communication between layers. Features include:
+The code is designed using Model-View-ViewModel (MVVM) architecture and leverages LiveData for uni-directional communication between layers. Features include:
 
 - Written in Kotlin
 - Tensorflow
@@ -109,9 +109,9 @@ The the code is designed using Model-View-ViewModel (MVVM) architecture and leve
 - Material Design 3
 - Jetpack Navigation Library
 - ViewModel and LiveData
-- Manual Factory-based Dependency Injection
+- Manual factory-based dependency injection
 - Single Activity - Multiple Fragment app architecture
-- Google Firebase Analytics, Remote Configuration and Crash Reporting
-- Admob Interstitial Ads
+- Google Firebase Analytics, Remote Configuration, and Crash Reporting
+- AdMob Interstitial Ads
 
 ![Application - Main List](docs/images/screenshot_list.jpg)&nbsp;&nbsp;&nbsp;&nbsp;![Application - Scan Detail](docs/images/screenshot_detail.jpg)
