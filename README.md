@@ -10,7 +10,7 @@ A neural network was trained on playing card images.
 
 The initial proof of concept was designed around a Yolo4-tiny convolutional neural network trained and implemented via the [Darknet Framework](https://github.com/pjreddie/darknet). Windows and Android proof-of-concept apps were built using the model. However, there were multiple issues integrating OpenCV, NVidia CUDA and the Android hardware.
 
-Next, a EfficientDet-Lite2 model from the [TensorFlow-Lite Framework](https://www.tensorflow.org/lite/android) was evaluated. The EfficientDet-Lite2 model was selected as it provided a reasonable frame rate while still minimizing the size for mobile.
+Next, a EfficientDet-Lite2 model from the [TensorFlow-Lite Framework](https://www.tensorflow.org/lite/android) was evaluated. The EfficientDet-Lite2 model was selected as it offered a reasonable frame rate while still minimizing the size required by mobile apps.
 
 
 | Model architecture | Size(MB)* | Latency(ms)** | Average Precision*** |
@@ -29,20 +29,20 @@ Next, a EfficientDet-Lite2 model from the [TensorFlow-Lite Framework](https://ww
 - 53 classes * 1000 ROI's per class = 53,000 ROI's, round to 54K.
 - 60/20/20 training/validation/test split gives 54K/18K/18K.
 - 90K total ROI's required.
-- At an average of 6-7 cards per image, we determine we need to generate a dataset of 13,702 images.
+- Assuming an average of 6-7 cards per image, we require a dataset of 13,702 images.
+
+Rummy Vision Pro - Neural Network Visualization [(SVG)](docs/images/card_vision.tflite.svg) [(PNG)](docs/images/card_vision.tflite.png)
 
 ## Asset Preparation
 
-Manually photographing and tagging thousands of training images is very labor intensive. Instead, image augmentation techniques were used to generate synthetic images for training. A deck of [Bicycle Rider Back Playing Cards (Poker 808)](https://bicyclecards.com/shop/bicycle-standard-index-808-playing-cards-black-10015510) were scanned, cropped, and normalized.
+It was determined manually photographing and tagging thousands of training images would be too labor intensive. Instead, image augmentation techniques were used to generate synthetic images for training. A deck of [Bicycle Rider Back Playing Cards (Poker 808)](https://bicyclecards.com/shop/bicycle-standard-index-808-playing-cards-black-10015510) were scanned, cropped, and normalized. Playing card scanning and preparation was one hour.
 
 ### Card Scanning Process
 
-- Place four cards on flatbed scanner, cover with black paper.
-- Scan image via Photoshop. 
-- Use File/Automate/Crop and Straighten to split and process each card.
-- Save card with class name as PNG.
+- Four cards at a time where scanned on flatbed scanner using Photoshop. 
+- Photoshop Automate/Crop and Straighten was used to split and process each card.
 - Raw card scan widths ranged from 739-744. Height ranged from 1034 to 1071.
-- Normalize cards to 741 x 1053. (Use Photoshop batch processing.)
+- Used Photoshop batch processing to normalized all cards to 741 x 1053.
 
 ![Raw CardScan](docs/images/cards_raw_scan.jpg "Raw Card Scan")
 
@@ -56,7 +56,7 @@ The bounding box data was automatically extracted via Python and OpenCV scripts 
 
 ### Training Scene Generation
 
-The goal is to create images with the same visual characteristics as a mobile phone video camera. Metadata indicating which classes are selected and the bounding boxes of the corner 'pips' for the image is also created.
+The goal is to create images with the same visual characteristics as a mobile phone video camera. Metadata containing which classes (cards) are selected and the bounding boxes of the corner 'pips' is created.
 
 The scripts are written in Python and use [OpenCV](https://opencv.org/) (cv2), [imgaug](https://imgaug.readthedocs.io/), and [Pillow](https://pypi.org/project/Pillow/) (PIL) libraries.
 
@@ -68,9 +68,9 @@ Backgrounds were obtained from [Describable Textures Dataset (DTD)](https://www.
 
 - A random background is chosen.
 - One to thirteen random cards (classes) are selected.
-- The second, inverted pip of the top card is masked to prevent it from impacting the training.
+- The second, inverted pip of the top card is masked to prevent it from affecting the training.
 - Card positions, spacing, rotations are randomized. Bounding boxes are adjusted accordingly.
-- Drop shadows are generated at card edges in order to increase realism.
+- Drop shadows are generated at card edges to increase realism.
 - Gaussian blur, brightness, and contrast are randomized. Random noise is injected. This is critical to prevent overtraining.
 - A random amount of motion blur is applied to 25% of the images.
 
